@@ -1,68 +1,20 @@
-import { useState } from 'react'
 import './App.css'
-
-interface WaitlistData {
-  email: string;
-  waitlist_id?: number;
-  referral_link?: string;
-}
-
-interface WaitlistResponse {
-  priority: number;
-  referral_link: string;
-  total_referrals: number;
-}
+import useWaitList from './hooks/useWaitlist';
 
 function App() {
-  const [waitlistData, setWaitlistData] = useState<WaitlistResponse | null>(null);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
-  function validateEmail(email: string) {
-    //eslint-disable-next-line no-useless-escape
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-      return true;
-    }
-    return false;
-  }
+  const { data, error, loading, submit, reset } = useWaitList()
 
-  // Function to submit Waitlist data
-  function submitWaitlist(data: WaitlistData) {
-    if (!data.email) {
-      setError("Please enter your email");
-      return;
-    }
-    if (validateEmail(data.email) === false) {
-      setError("Please enter a valid email");
-      return;
-    }
-
-    setLoading(true);
-
-    data.waitlist_id = 21224;
-    data.referral_link = document.URL;
-
-    fetch("https://api.getwaitlist.com/api/v1/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setWaitlistData(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setLoading(false);
-      });
-  }
   return (
-    <>
     <div className="flex w-full h-full p-6">
-      {!waitlistData ? (
-        <form className="w-full">
+      {!data ? (
+        <form className="w-full" onSubmit={(e) => {
+          e.preventDefault();
+
+          const formData = new FormData(e.target as HTMLFormElement)
+          const email = formData.get("email") as string
+
+          submit({ email })
+        }}>
           <div className="flex flex-col space-y-4">
             <div className="flex flex-col space-y-2">
               <label htmlFor="email" className="text-gray-700">
@@ -82,13 +34,8 @@ function App() {
           </div>
           <div className="mt-4">
             <button
-              type="button"
+              type="submit"
               disabled={loading}
-              onClick={() => {
-                submitWaitlist({
-                  email: (document.getElementById("email") as HTMLInputElement)?.value,
-                });
-              }}
               className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md px-3 py-2 w-full transition duration-300"
             >
               {loading ? (
@@ -108,19 +55,17 @@ function App() {
         <div className="text-gray-700">
           <div>
             Thank you for signing up. Your are waiter{" "}
-            <b>{waitlistData.priority}</b> on the waitlist.{" "}
+            <b>{data.priority}</b> on the waitlist.{" "}
           </div>
-          
+
           <div>
-            Total referrals: <b>{waitlistData.total_referrals}</b>
+            Total referrals: <b>{data.total_referrals}</b>
           </div>
           <div className="mt-4">
             <button
               type="button"
               disabled={loading}
-              onClick={() => {
-                setWaitlistData(null);
-              }}
+              onClick={reset}
               className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md px-3 py-2 w-full transition duration-300"
             >
               Return to signup
@@ -129,7 +74,6 @@ function App() {
         </div>
       )}
     </div>
-    </>
   )
 }
 

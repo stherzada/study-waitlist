@@ -35,7 +35,6 @@ const useWaitList = () => {
         }
 
         if (!validateEmail(data.email)) {
-            console.log('aa')
             setError("Please enter a valid email");
             return;
         }

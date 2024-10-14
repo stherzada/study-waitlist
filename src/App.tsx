@@ -1,11 +1,15 @@
 import './App.css'
+import 'animate.css';
+
 import useWaitList from './hooks/useWaitlist';
 
 function App() {
   const { data, error, loading, submit, reset } = useWaitList()
 
   return (
-    <div className="flex w-full h-full p-6">
+    <>
+    <h1 className="animate__animated animate__backInRight text-3xl font-bold text-white text-center">Waitlist da <i>Stherzada</i> 🌹</h1>
+    <div className="flex w-full h-full p-6 ">
       {!data ? (
         <form className="w-full" onSubmit={(e) => {
           e.preventDefault();
@@ -17,14 +21,14 @@ function App() {
         }}>
           <div className="flex flex-col space-y-4">
             <div className="flex flex-col space-y-2">
-              <label htmlFor="email" className="text-gray-700">
-                What is your email?
+              <label htmlFor="email" className="font-normal">
+                Qual é o seu email?
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="Please enter your email"
+                placeholder="Por favor, insira seu email"
                 autoComplete="email"
                 onChange={(e) => e.stopPropagation()}
                 required
@@ -39,9 +43,9 @@ function App() {
               className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md px-3 py-2 w-full transition duration-300"
             >
               {loading ? (
-                <h1>Loading...</h1>
+                <h3>Carregando...</h3>
               ) : (
-                "Sign up for the waitlist"
+                "Entre no waitlist da Stherzada"
               )}
             </button>
             {error && (
@@ -52,14 +56,10 @@ function App() {
           </div>
         </form>
       ) : (
-        <div className="text-gray-700">
+        <div className="text-base">
           <div>
-            Thank you for signing up. Your are waiter{" "}
-            <b>{data.priority}</b> on the waitlist.{" "}
-          </div>
-
-          <div>
-            Total referrals: <b>{data.total_referrals}</b>
+            <p>Obrigada por se inscrever no waitlist da Stherzada. Sua prioridade</p>
+            <b>{data.priority}</b> na waitlist.
           </div>
           <div className="mt-4">
             <button
@@ -68,12 +68,14 @@ function App() {
               onClick={reset}
               className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md px-3 py-2 w-full transition duration-300"
             >
-              Return to signup
+              Retorne para se inscrever com outro email
             </button>
           </div>
         </div>
       )}
+      
     </div>
+    </>
   )
 }
 
